@@ -1,0 +1,27 @@
+name: SonarCloud Analysis
+
+on:
+  # Déclenche l'analyse lors de chaque push sur la branche "main"
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Étape 1 : Cloner le code
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Cela permet d'éviter les erreurs d'analyse avec des clones superficiels
+
+    # Étape 2 : Lancer l'analyse avec SonarCloud
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@v3.1.0  # Utilisation de l'action officielle SonarCloud
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Utilisation du secret SONAR_TOKEN dans l'environnement
