@@ -12,17 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ng-toolkit # Modifiez ce chemin selon vos besoins
-
     strategy:
       matrix:
         node-version: [16.x] # Utilisez une version LTS pour Angular
 
     steps:
       # Étape 1 : Cloner le dépôt
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # Étape 2 : Configurer Node.js
       - name: Set up Node.js ${{ matrix.node-version }}
@@ -33,18 +29,21 @@ jobs:
       # Étape 3 : Installer les dépendances
       - name: Install dependencies
         run: npm ci
+        working-directory: ./front
 
       # Étape 4 : Exécuter les tests avec couverture
       - name: Run Tests and Generate Coverage
         run: npm run test:prod -- --code-coverage
+        working-directory: ./front
 
       # Étape 5 : Linter le code
       - name: Run Lint
         run: npm run lint
+        working-directory: ./front
 
-      # Étape 6 : Upload des rapports de couverture (si nécessaire)
+      # Étape 6 : Upload des rapports de couverture
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: frontend-coverage-report
-          path: coverage
+          path: front/coverage
