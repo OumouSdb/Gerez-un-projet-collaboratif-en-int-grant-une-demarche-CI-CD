@@ -47,7 +47,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=014949fee5a360e3df465bf9a37df1e785d9c842
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
             -Dsonar.organization=oumousdb
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
