@@ -23,22 +23,22 @@ jobs:
 
       # Étape 3 : Construire le projet avec Maven
       - name: Build with Maven
-        run: mvn -B clean package --file ./back/pom.xml
+        run: mvn -B clean package --file back/pom.xml
 
       # Étape 4 : Exécuter les tests avec Maven
       - name: Run Tests with Maven
-        run: mvn -B test --file ./back/pom.xml
+        run: mvn -B test --file back/pom.xml
 
       # Étape 5 : Générer le rapport de couverture Jacoco
       - name: Generate Coverage Report
-        run: mvn jacoco:report --file ./back/pom.xml
+        run: mvn jacoco:report --file back/pom.xml
 
       # Étape 6 : Upload des rapports de couverture
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: backend-coverage-report
-          path: target/site/jacoco
+          path: back/target/site/jacoco
 
       # Étape 7 : Analyse avec SonarCloud
       - name: SonarCloud Scan
@@ -49,11 +49,11 @@ jobs:
           args: >
             -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
             -Dsonar.organization=oumousdb
-            -Dsonar.sources=src/main/java
-            -Dsonar.tests=src/test/java
-            -Dsonar.java.binaries=target/classes
-            -Dsonar.junit.reportPaths=target/surefire-reports
-            -Dsonar.jacoco.reportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.sources=back/src/main/java
+            -Dsonar.tests=back/src/test/java
+            -Dsonar.java.binaries=back/target/classes
+            -Dsonar.junit.reportPaths=back/target/surefire-reports
+            -Dsonar.jacoco.reportPaths=back/target/site/jacoco/jacoco.xml
             -Dsonar.project.monorepo.enabled=false
             -Dsonar.issues.defaultAssigneeLogin=your-sonarcloud-username
             -Dsonar.sensor.cache.project.enable=true
