@@ -7,36 +7,40 @@ on:
   pull_request:
     branches:
       - main
-      - 'card-/**' # Branches avec le préfixe card-
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      # Étape 1 : Cloner le dépôt
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      # Étape 2 : Configurer Java 11
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
 
-      # Étape 3 : Construire avec Maven
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
 
-      # Étape 4 : Exécuter les tests avec Maven
       - name: Run Tests with Maven
         run: mvn -B test --file pom.xml
 
-      # Étape 5 : Générer le rapport de couverture Jacoco
       - name: Generate Coverage Report
         run: mvn jacoco:report --file pom.xml
 
-      # Étape 6 : Upload des rapports de couverture (si nécessaire)
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: backend-coverage-report
           path: target/site/jacoco
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v2.1.0
+        env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+        args: >
+            -Dsonar.projectKey=sqa_5fd8341e84c569c5e5afa4fd884eeb55bb3704b2
+            -Dsonar.organization=oumousdb
+            -Dsonar.java.binaries=target/classes
+

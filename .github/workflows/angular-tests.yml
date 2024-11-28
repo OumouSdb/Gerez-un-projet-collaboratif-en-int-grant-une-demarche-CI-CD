@@ -3,12 +3,10 @@ name: Angular CI and Coverage Report
 on:
   push:
     branches:
-      - master
-      - dev/*
+      - main
   pull_request:
     branches:
-      - master
-      - dev/*
+      - main
 
 jobs:
   build:
@@ -46,7 +44,7 @@ jobs:
 
       # Étape 6 : Upload des rapports de couverture (si nécessaire)
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: frontend-coverage-report
           path: coverage
