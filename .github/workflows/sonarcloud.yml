@@ -1,7 +1,6 @@
 name: SonarCloud Analysis
 
 on:
-  # Déclenche l'analyse lors de chaque push sur la branche "main"
   push:
     branches:
       - main
@@ -12,16 +11,19 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
-
     steps:
-    # Étape 1 : Cloner le code
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Cela permet d'éviter les erreurs d'analyse avec des clones superficiels
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    # Étape 2 : Lancer l'analyse avec SonarCloud
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@v3.1.0  # Utilisation de l'action officielle SonarCloud
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Utilisation du secret SONAR_TOKEN dans l'environnement
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v3.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+            -Dsonar.organization=oumousdb
+            -Dsonar.sources=./src
+            -Dsonar.exclusions=**/*.spec.ts,**/*.test.ts
