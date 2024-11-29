@@ -47,3 +47,16 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage
+
+                # Étape : Analyse avec SonarCloud
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v3.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+            -Dsonar.organization=oumousdb
+            -Dsonar.sources=front/src
+            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
+
