@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] # Utilisez une version LTS pour Angular
+        node-version: [18.x] # Utilisation d'une version LTS pour Angular
 
     steps:
       # Étape 1 : Cloner le dépôt
@@ -24,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: ${{ matrix.node-version }}
 
       # Étape 3 : Installer les dépendances
       - name: Install dependencies
@@ -48,7 +48,7 @@ jobs:
           name: frontend-coverage-report
           path: front/coverage
 
-                # Étape : Analyse avec SonarCloud
+      # Étape 7 : Analyse avec SonarCloud
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v3.1.0
         env:
@@ -59,4 +59,3 @@ jobs:
             -Dsonar.organization=oumousdb
             -Dsonar.sources=front/src
             -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
-

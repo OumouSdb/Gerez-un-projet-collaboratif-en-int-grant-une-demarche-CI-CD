@@ -11,12 +11,15 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+
     steps:
+      # Étape 1 : Cloner le dépôt
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # Étape 2 : Lancer l'analyse avec SonarCloud
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v3.1.0
         env:
@@ -25,5 +28,10 @@ jobs:
           args: >
             -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
             -Dsonar.organization=oumousdb
-            -Dsonar.sources=./src
-            -Dsonar.exclusions=**/*.spec.ts,**/*.test.ts
+            -Dsonar.sources=back/src/main/java,front/src
+            -Dsonar.tests=back/src/test/java
+            -Dsonar.java.binaries=back/target/classes
+            -Dsonar.junit.reportPaths=back/target/surefire-reports
+            -Dsonar.jacoco.reportPaths=back/target/site/jacoco/jacoco.xml
+            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
+            -Dsonar.exclusions=front/src/**/*.spec.ts
