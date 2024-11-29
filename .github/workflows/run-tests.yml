@@ -54,6 +54,3 @@ jobs:
             -Dsonar.java.binaries=back/target/classes
             -Dsonar.junit.reportPaths=back/target/surefire-reports
             -Dsonar.jacoco.reportPaths=back/target/site/jacoco/jacoco.xml
-            -Dsonar.project.monorepo.enabled=false
-            -Dsonar.issues.defaultAssigneeLogin=your-sonarcloud-username
-            -Dsonar.sensor.cache.project.enable=true
