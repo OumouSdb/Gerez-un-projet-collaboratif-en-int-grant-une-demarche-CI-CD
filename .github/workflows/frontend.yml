@@ -1,4 +1,4 @@
-name: Angular CI and Coverage Report
+name: Frontend CI
 
 on:
   push:
@@ -9,22 +9,23 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test-frontend:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x] # Utilisation d'une version LTS pour Angular
+        node-version: [16.x] # Version LTS recommandée pour Angular
 
     steps:
       # Étape 1 : Cloner le dépôt
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       # Étape 2 : Configurer Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
 
       # Étape 3 : Installer les dépendances
       - name: Install dependencies
@@ -47,15 +48,3 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage
-
-      # Étape 7 : Analyse avec SonarCloud
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v3.1.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
-            -Dsonar.organization=oumousdb
-            -Dsonar.sources=front/src
-            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
