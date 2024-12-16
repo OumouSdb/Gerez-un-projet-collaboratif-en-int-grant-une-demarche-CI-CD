@@ -25,41 +25,46 @@ jobs:
         with:
           java-version: 17
 
-      # Étape 3 : Construction backend
+      # Étape 3 : Compilation du Backend
       - name: Build Backend
-        run: mvn clean package --file back/pom.xml
+        working-directory: ./back
+        run: mvn clean package -DskipTests
 
-      # Étape 4 : Configuration du frontend
+      # Étape 4 : Analyse SonarCloud pour le Backend
+      - name: SonarCloud Scan (Backend)
+        working-directory: ./back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
+            -Dsonar.organization=oumousdb \
+            -Dsonar.host.url=https://sonarcloud.io
+
+      # Étape 5 : Configuration du Frontend
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
       - name: Install Frontend Dependencies
+        working-directory: ./front
         run: npm ci
-        working-directory: ./front
 
-      # Étape 5 : Tests backend et frontend
-      - name: Run Backend Tests
-        run: mvn test --file back/pom.xml
-
+      # Étape 6 : Tests Frontend et Couverture
       - name: Run Frontend Tests
-        run: npm run test:prod -- --code-coverage
         working-directory: ./front
+        run: npm run test:prod -- --code-coverage
 
-      # Étape 6 : Analyse SonarCloud
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v3.1.0
+      # Étape 7 : Analyse SonarCloud pour le Frontend
+      - name: SonarCloud Scan (Frontend)
+        working-directory: ./front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
-            -Dsonar.organization=oumousdb
-            -Dsonar.sources=back/src/main/java,front/src
-            -Dsonar.tests=back/src/test/java
-            -Dsonar.java.binaries=back/target
-            -Dsonar.junit.reportPaths=back/target/surefire-reports
-            -Dsonar.jacoco.reportPaths=back/target/site/jacoco/jacoco.xml
-            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
-            -Dsonar.exclusions=front/src/**/*.spec.ts
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
+            -Dsonar.organization=oumousdb \
+            -Dsonar.sources=src \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.host.url=https://sonarcloud.io
