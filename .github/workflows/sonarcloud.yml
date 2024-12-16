@@ -13,35 +13,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1 : Checkout du code
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Étape 2 : Configuration du backend
+      # Configuration Maven pour le backend
       - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
           java-version: 17
 
-      # Étape 3 : Compilation du Backend
-      - name: Build Backend
+      - name: Build and Analyze Backend
         working-directory: ./back
-        run: mvn clean package -DskipTests
-
-      # Étape 4 : Analyse SonarCloud pour le Backend
-      - name: SonarCloud Scan (Backend)
-        working-directory: ./back
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
             -Dsonar.organization=oumousdb \
             -Dsonar.host.url=https://sonarcloud.io
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # Étape 5 : Configuration du Frontend
+      # Configuration Node.js pour le frontend
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -51,20 +44,19 @@ jobs:
         working-directory: ./front
         run: npm ci
 
-      # Étape 6 : Tests Frontend et Couverture
       - name: Run Frontend Tests
         working-directory: ./front
         run: npm run test:prod -- --code-coverage
 
-      # Étape 7 : Analyse SonarCloud pour le Frontend
+      # SonarCloud Scan pour le frontend
       - name: SonarCloud Scan (Frontend)
-        working-directory: ./front
+        uses: sonarsource/sonarcloud-github-action@v3.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD \
-            -Dsonar.organization=oumousdb \
-            -Dsonar.sources=src \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+        with:
+          args: >
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
+            -Dsonar.organization=oumousdb
+            -Dsonar.sources=front/src
+            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
             -Dsonar.host.url=https://sonarcloud.io
