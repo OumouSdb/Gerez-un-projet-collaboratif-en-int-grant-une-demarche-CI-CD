@@ -12,39 +12,29 @@ jobs:
   build-and-test-frontend:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x] # Version LTS recommandée pour Angular
-
     steps:
-      # Étape 1 : Cloner le dépôt
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Étape 2 : Configurer Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-      # Étape 3 : Installer les dépendances
-      - name: Install dependencies
+      - name: Install Dependencies
+        working-directory: ./front
         run: npm ci
-        working-directory: ./front
 
-      # Étape 4 : Exécuter les tests avec couverture
-      - name: Run Tests and Generate Coverage
-        run: npm run test:prod -- --code-coverage
+      - name: Lint Code
         working-directory: ./front
-
-      # Étape 5 : Linter le code
-      - name: Run Lint
         run: npm run lint
-        working-directory: ./front
 
-      # Étape 6 : Upload des rapports de couverture
+      - name: Run Tests with Coverage
+        working-directory: ./front
+        run: npm run test:prod -- --code-coverage
+
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-report
           path: front/coverage
