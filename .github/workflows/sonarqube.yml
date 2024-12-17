@@ -4,21 +4,39 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   sonarqube-local:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout du code
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # 2. Lancer SonarQube local avec Docker
+      - name: Start SonarQube server
+        run: |
+          docker run -d --name sonarqube \
+            -p 9000:9000 \
+            -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true \
+            sonarqube:lts
+          echo "Waiting for SonarQube to start..."
+          sleep 60
+
+      # 3. Configuration JDK pour le backend
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
 
+      # 4. Build et analyse backend avec SonarQube
       - name: Build and Analyze Backend
         working-directory: ./back
         env:
@@ -29,10 +47,29 @@ jobs:
             -Dsonar.host.url=http://localhost:9000 \
             -Dsonar.login=$SONAR_TOKEN
 
-      - name: Analyze Frontend
+      # 5. Configuration Node.js pour le frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      # 6. Install et test frontend
+      - name: Install Frontend Dependencies
         working-directory: ./front
+        run: npm ci
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Run Frontend Tests
+        working-directory: ./front
+        run: npm run test:prod -- --code-coverage
+
+      # 7. Analyse frontend avec SonarQube
+      - name: Analyze Frontend
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        working-directory: ./front
         run: |
           sonar-scanner \
             -Dsonar.projectKey=mon-projet-local \
