@@ -50,3 +50,12 @@ jobs:
             exit 1
           fi
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:latest ./back
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/backend:latest
+
+      - name: Cleanup Docker
+        run: docker system prune -f
