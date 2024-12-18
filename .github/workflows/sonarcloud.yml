@@ -30,7 +30,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         run: |
           mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=OumouSdb_Gerez_Backend \
+            -Dsonar.projectKey=oumousdb_backend \
             -Dsonar.organization=oumousdb \
             -Dsonar.host.url=https://sonarcloud.io
 
@@ -62,7 +62,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=OumouSdb_Gerez_Frontend
+            -Dsonar.projectKey=OumouSdb_Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD
             -Dsonar.organization=oumousdb
             -Dsonar.sources=front/src
             -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
