@@ -7,6 +7,8 @@ public class Joke {
     public Joke() {
     }
 
+
+
     public Joke(String joke, String response) {
         this.joke = joke;
         this.response = response;
